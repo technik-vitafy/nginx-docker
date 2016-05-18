@@ -6,7 +6,7 @@ NAMESPACE=funkygibbon
 
 PROJECT_DIR=`pwd`
 
-PROJECTS=("nginx" "nginx-pagespeed" "nginx-php-exim" "nginx-proxy" )
+PROJECTS=("nginx" "nginx-pagespeed" )
 
 cd ${PROJECT_DIR}/nginx
 
