@@ -4,7 +4,7 @@ EXPOSE 80
 EXPOSE 443
 
 # http://nginx.org/en/download.html
-ENV NGINX_VERSION 1.10.2
+ENV NGINX_VERSION 1.11.4
 
 # https://github.com/pagespeed/ngx_pagespeed/releases
 ENV PAGESPEED_VERSION 1.11.33.4
@@ -13,7 +13,7 @@ ENV PAGESPEED_VERSION 1.11.33.4
 ENV HEADERS_MORE_VERSION 0.31
 
 # https://www.openssl.org/source
-ENV OPENSSL_VERSION 1.1.0b
+ENV OPENSSL_VERSION 1.0.2i
 
 RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx && \
 	apt-get update && \
