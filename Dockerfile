@@ -1,32 +1,24 @@
+# Version of the official Ubuntu version
 ENV UBUNTU_VERSION 14.04
+# http://nginx.org/en/download.html
+ENV NGINX_VERSION 1.11.4
+# https://github.com/pagespeed/ngx_pagespeed/releases
+ENV PAGESPEED_VERSION 1.11.33.4
 
-FROM funkygibbon/ubuntu
+# The image to build this image on
+FROM ubuntu:${UBUNTU_VERSION}
 
 EXPOSE 80
 EXPOSE 443
 
-# http://nginx.org/en/download.html
-ENV NGINX_VERSION 1.11.4
-
-# https://github.com/pagespeed/ngx_pagespeed/releases
-ENV PAGESPEED_VERSION 1.11.33.4
-
-# https://github.com/openresty/headers-more-nginx-module/tags
-ENV HEADERS_MORE_VERSION 0.31
-
-# https://www.openssl.org/source
-ENV OPENSSL_VERSION 1.0.2i
-
-RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx && \
-	apt-get update && \
-	apt-get -y --no-install-recommends install wget git-core autoconf automake libtool build-essential zlib1g-dev libpcre3-dev libxslt1-dev libxml2-dev libgd2-xpm-dev libgeoip-dev libgoogle-perftools-dev libperl-dev && \
-	echo "Downloading nginx v${NGINX_VERSION} from http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz ..." && wget -qO - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf - -C /tmp && \
-#	echo "Downloading headers-more v${HEADERS_MORE_VERSION} from https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz ..." && wget -qO - https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz | tar zxf - -C /tmp && \
-	echo "Downloading ngx_pagespeed v${PAGESPEED_VERSION} from https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz..." && wget -qO - https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz | tar zxf - -C /tmp && \
-	echo "Downloading pagespeed psol v${PAGESPEED_VERSION} from https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz..." && wget -qO - https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz | tar xzf  - -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && \
-	echo "Downloading openssl v${OPENSSL_VERSION} from https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz ..." && wget -qO - https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar xzf  - -C /tmp && \
-	cd /tmp/nginx-${NGINX_VERSION} && \
-	POSITION_AUX=true ./configure \
+RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx
+RUN apt-get update
+RUN apt-get -y --no-install-recommends install wget git-core autoconf automake libtool build-essential zlib1g-dev libpcre3-dev libxslt1-dev libxml2-dev libgd2-xpm-dev libgeoip-dev libgoogle-perftools-dev libperl-dev
+RUN	echo "Downloading nginx v${NGINX_VERSION} from http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz ..." && wget -qO - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf - -C /tmp
+RUN	echo "Downloading ngx_pagespeed v${PAGESPEED_VERSION} from https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz..." && wget -qO - https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz | tar zxf - -C /tmp
+RUN	echo "Downloading pagespeed psol v${PAGESPEED_VERSION} from https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz..." && wget -qO - https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz | tar xzf  - -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta
+RUN	cd /tmp/nginx-${NGINX_VERSION}
+RUN	POSITION_AUX=true ./configure \
 		--prefix=/etc/nginx  \
 		--sbin-path=/usr/sbin/nginx  \
 		--conf-path=/etc/nginx/nginx.conf  \
@@ -67,8 +59,6 @@ RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/
 		--with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed' \
 		--with-ipv6 \
 		--with-pcre-jit \
-		--with-openssl=/tmp/openssl-${OPENSSL_VERSION} \
-	#	--add-module=/tmp/headers-more-nginx-module-${HEADERS_MORE_VERSION} \
 		--add-module=/tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && \
 	make && \
 	make install && \
@@ -84,8 +74,6 @@ ENV DEFAULT_APP_GID 1000
 ENV DEFAULT_UPLOAD_MAX_SIZE 30M
 ENV DEFAULT_NGINX_MAX_WORKER_PROCESSES 8
 ENV DEFAULT_CHOWN_APP_DIR true
-
-ENV SSL_ENABLED true
 
 COPY . /app
 
