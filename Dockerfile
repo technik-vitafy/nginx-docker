@@ -1,12 +1,9 @@
-# Version of the official Ubuntu version
-ENV UBUNTU_VERSION 14.04
+# The image to build this image on
+FROM ubuntu:14.04
 # http://nginx.org/en/download.html
 ENV NGINX_VERSION 1.11.4
 # https://github.com/pagespeed/ngx_pagespeed/releases
 ENV PAGESPEED_VERSION 1.11.33.4
-
-# The image to build this image on
-FROM ubuntu:${UBUNTU_VERSION}
 
 EXPOSE 80
 EXPOSE 443
