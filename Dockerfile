@@ -13,7 +13,7 @@ EXPOSE 443
 RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx
 RUN apt-get update
 #######################################									NGINX												#							PAGESPEED											######################################################################
-RUN apt-get -y --no-install-recommends wget install libpcre3 libpcre3-dev zlib1g-dev build-essential libpcre3 libpcre3-dev unzip
+RUN apt-get -y --no-install-recommends install wget libpcre3 libpcre3-dev zlib1g-dev build-essential libpcre3 libpcre3-dev unzip
 RUN	echo "Downloading nginx v${NGINX_VERSION} from http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz ..." && wget -qO - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf - -C /tmp
 RUN	echo "Downloading ngx_pagespeed v${PAGESPEED_VERSION} from https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz..." && wget -qO - https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz | tar zxf - -C /tmp
 RUN	echo "Downloading pagespeed psol v${PAGESPEED_VERSION} from https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz..." && wget -qO - https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz | tar xzf  - -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta
