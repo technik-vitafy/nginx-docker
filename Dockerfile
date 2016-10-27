@@ -15,14 +15,14 @@ ENV OPENSSL_VERSION 1.0.2i
 RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx
 RUN	apt-get update
 RUN	apt-get -y --no-install-recommends install wget git-core autoconf automake libtool build-essential zlib1g-dev libpcre3-dev libxslt1-dev libxml2-dev libgd2-xpm-dev libgeoip-dev libgoogle-perftools-dev libperl-dev
-#RUN	echo "Downloading nginx v${NGINX_VERSION} from http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" && wget -qO - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf - -C /tmp && echo "	:DONE"
-ADD ./nginx-${NGINX_VERSION}.tar.gz /tmp
-#RUN	echo "Downloading ngx_pagespeed v${PAGESPEED_VERSION} from https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz" && wget -qO - https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz | tar zxf - -C /tmp && echo "	:DONE"
-ADD ngx_pagespeed-${PAGESPEED_VERSION}-beta.tar /tmp
-#RUN	echo "Downloading pagespeed psol v${PAGESPEED_VERSION} from https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz" && wget -qO - https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz | tar xzf  - -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && echo "	:DONE"
-ADD ${PAGESPEED_VERSION}.tar /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta
-#RUN	echo "Downloading openssl v${OPENSSL_VERSION} from https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" && wget -qO - https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar xzf  - -C /tmp && echo "	:DONE"
-ADD openssl-${OPENSSL_VERSION}.tar /tmp
+RUN	echo "Downloading nginx v${NGINX_VERSION} from http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" && wget -qO - http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxf - -C /tmp && echo "	:DONE"
+#ADD ./nginx-${NGINX_VERSION}.tar.gz /tmp
+RUN	echo "Downloading ngx_pagespeed v${PAGESPEED_VERSION} from https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz" && wget -qO - https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz | tar zxf - -C /tmp && echo "	:DONE"
+#ADD ngx_pagespeed-${PAGESPEED_VERSION}-beta.tar /tmp
+RUN	echo "Downloading pagespeed psol v${PAGESPEED_VERSION} from https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz" && wget -qO - https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz | tar xzf  - -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && echo "	:DONE"
+#ADD ${PAGESPEED_VERSION}.tar /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta
+RUN	echo "Downloading openssl v${OPENSSL_VERSION} from https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" && wget -qO - https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar xzf  - -C /tmp && echo "	:DONE"
+#ADD openssl-${OPENSSL_VERSION}.tar /tmp
 RUN	cd /tmp/nginx-${NGINX_VERSION} && \
 	./configure \
 		--prefix=/etc/nginx  \
