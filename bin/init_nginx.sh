@@ -1,11 +1,8 @@
 #!/bin/sh
 set -e
 
-cp -R /app/etc/* /etc
+# Forward the request end error log to the docker log collector
+ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
-chmod +x /etc/service/*/run
-#ln -s /app/bin/add_user.sh /etc/my_init.d/00_add_user.sh
-
-mkdir -p /app/www
-
-echo "<html><head>Success</head><body><p><a href="https://hub.docker.com/u/funkygibbon/">funkygibbon</a>/nginx:${NGINX_VERSION}-${OPENSSL_VERSION} - `date`</p>" > /app/www/index.html
+# Copy the default config to the nginx folder
+cp /app/nginx/nginx.conf /etc/nginx/nginx.conf

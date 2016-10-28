@@ -1,5 +1,7 @@
+# Build with official ubuntu image
 FROM ubuntu:14.04
 
+# Expose ports for http and ssl requests
 EXPOSE 80
 EXPOSE 443
 
@@ -12,21 +14,46 @@ ENV PAGESPEED_VERSION 1.11.33.4
 # https://www.openssl.org/source
 ENV OPENSSL_VERSION 1.0.2i
 
+# Create new nginx user
 RUN useradd -r -s /usr/sbin/nologin nginx && mkdir -p /var/log/nginx /var/cache/nginx
+# Update the system
 RUN	apt-get update
+# Install external dependencys with apt-get
 RUN	apt-get -y --no-install-recommends install git-core autoconf automake libtool build-essential zlib1g-dev libpcre3-dev libxslt1-dev libxml2-dev libgd2-xpm-dev libgeoip-dev libgoogle-perftools-dev libperl-dev
-ADD http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz nginx.tar.gz
-RUN tar zxf nginx.tar.gz -C /tmp && rm -f nginx.tar.gz
+
+###############################################################################
+# Get the intall packages from the local machine															#
+###############################################################################
+# Adds and extracts the nginx version to the /tmp folder
 #ADD ./nginx-${NGINX_VERSION}.tar.gz /tmp
-ADD https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz pagespeed.tar.gz
-RUN tar zxf pagespeed.tar.gz -C /tmp && rm -f pagespeed.tar.gz
+# Adds and extracts the nginx verion of pagespeed to the /tmp folder
 #ADD ngx_pagespeed-${PAGESPEED_VERSION}-beta.tar /tmp
-ADD https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz psol.tar.gz
-RUN tar xzf psol.tar.gz -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && rm -f psol.tar.gz
+# Adds and extracts psol to the /tmp/pagespeed folder so dont change the download and extracton order
 #ADD ${PAGESPEED_VERSION}.tar /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta
-ADD https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz openssl.tar.gz
-RUN tar xzf openssl.tar.gz -C /tmp && rm -f openssl.tar.gz
+# Adds and extracs the openSSL version to the /tmp folder
 #ADD openssl-${OPENSSL_VERSION}.tar /tmp
+
+###############################################################################
+# Get the install packages from the git repositories													#
+###############################################################################
+# Download the nginx version
+ADD http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz nginx.tar.gz
+# Extract and remove the nginx package to the /tmp folder
+RUN tar zxf nginx.tar.gz -C /tmp && rm -f nginx.tar.gz
+# Download the nginx version
+ADD https://github.com/pagespeed/ngx_pagespeed/archive/v${PAGESPEED_VERSION}-beta.tar.gz pagespeed.tar.gz
+# Extract and remove the ngx_pagespeed package to the /tmp folder
+RUN tar zxf pagespeed.tar.gz -C /tmp && rm -f pagespeed.tar.gz
+# Download the psol version
+ADD https://dl.google.com/dl/page-speed/psol/${PAGESPEED_VERSION}.tar.gz psol.tar.gz
+# Extract and remove the psol package to the /tmp/pagespeed-version dolder so do not change the download/extraction order
+RUN tar xzf psol.tar.gz -C /tmp/ngx_pagespeed-${PAGESPEED_VERSION}-beta && rm -f psol.tar.gz
+# Download the openSSL version
+ADD https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz openssl.tar.gz
+# Extract and remove the openssl package to the /tmp folder
+RUN tar xzf openssl.tar.gz -C /tmp && rm -f openssl.tar.gz
+
+# Create the nginx config fiele to initialize the modules
 RUN	cd /tmp/nginx-${NGINX_VERSION} && \
 	./configure \
 		--prefix=/etc/nginx  \
@@ -78,20 +105,11 @@ RUN	cd /tmp/nginx-${NGINX_VERSION} && \
 	apt-get clean && \
 	rm -Rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
-ENV DEFAULT_APP_USER app
-ENV DEFAULT_APP_GROUP app
-ENV DEFAULT_APP_UID 1000
-ENV DEFAULT_APP_GID 1000
-ENV DEFAULT_UPLOAD_MAX_SIZE 30M
-ENV DEFAULT_NGINX_MAX_WORKER_PROCESSES 8
-ENV DEFAULT_CHOWN_APP_DIR true
-
-ENV SSL_ENABLED true
-
+# Copy all image files to the docker container
 COPY . /app
-
-RUN chmod 750 /app/bin/*.sh
-
-RUN /app/bin/init_nginx.sh
-
-CMD ["/sbin/my_init"]
+# Set permissions for the init file
+RUN chmod 750 ./app/bin/init_nginx.sh
+# Run the init file
+RUN ./app/bin/init_nginx.sh
+# Start the nginx with default startup entrypoint
+ENTRYPOINT ["/usr/sbin/nginx", "-g", "daemon off;"]
